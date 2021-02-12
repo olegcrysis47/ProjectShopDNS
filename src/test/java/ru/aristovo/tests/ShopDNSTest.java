@@ -127,6 +127,40 @@ public class ShopDNSTest extends BaseTests {
         // 12. перейти в корзину
         sumBasketOnScreen.click();
 
+        // 13. проверить, что для приставки выбрана гарантия на 2 года
+        String selectBasketProductXPath = "//div[@class='cart-items__product']";
+        List<WebElement> selectBasketProduct = driver.findElements(By.xpath(selectBasketProductXPath));
+        for (WebElement w : selectBasketProduct) {
+            WebElement titleProduct = w.findElement(By.xpath(".//a[@class='cart-items__product-name-link']"));
+            if (titleProduct.getText().toLowerCase().contains("playstation")) {
+                WebElement checkGur = w.findElement(By.xpath(".//div[@data-commerce-target='basket_additional_warranty_24']//span"));
+                Assertions.assertEquals("base-ui-radio-button__icon base-ui-radio-button__icon_checked",
+                        checkGur.getAttribute("class"),
+                        "Гарантия не установлена на кнопке 24 мес. (2 года)");
+                break;
+            }
+        }
+
+        // 14. проверить цену каждого из товаров и сумму
+        for (WebElement w : selectBasketProduct) {
+            WebElement titleProduct = w.findElement(By.xpath(".//a[@class='cart-items__product-name-link']"));
+            WebElement priceProduct = w.findElement(By.xpath(".//span[@class='price__current']"));
+            switch (titleProduct.getText().trim()) {
+                case "Игровая консоль PlayStation 4 Slim Black 1 TB + 3 игры":
+                    Assertions.assertEquals(pricePSNotGur,
+                            Integer.parseInt(priceProduct.getText().replaceAll("\\W", "")),
+                            "Цена не соответствует товару");
+                    break;
+                case "Игра Detroit: Стать человеком (PS4)":
+                    Assertions.assertEquals(priceDiskDetroit,
+                            Integer.parseInt(priceProduct.getText().replaceAll("\\W", "")),
+                            "Цена не соответствует товару");
+                    break;
+            }
+        }
+
+
+
         // временно, чтобы посмотреть запоминание переменных
         System.out.println("priceBasket = " + priceBasket);
         System.out.println("pricePSNotGur = " + pricePSNotGur);
@@ -136,8 +170,6 @@ public class ShopDNSTest extends BaseTests {
 
         waitThread(3000);
         /*
-        13. проверить, что для приставки выбрана гарантия на 2 года
-        14. проверить цену каждого из товаров и сумму
         15. удалить из корзины Detroit
         16. проверить что Detroit нет больше в корзине и что сумма уменьшилась на цену Detroit
         17. добавить еще 2 playstation (кнопкой +) и проверить что сумма верна (равна трем ценам playstation)
