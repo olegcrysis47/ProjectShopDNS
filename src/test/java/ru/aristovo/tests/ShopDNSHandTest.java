@@ -23,7 +23,7 @@ public class ShopDNSHandTest extends BaseHandTests {
     static int priceDiskDetroit;        // цена диска Детроит
 
     @Test
-    @DisplayName("Тест покупки PlayStation и пары дисков с играми")
+    @DisplayName("Ручной тест покупки PlayStation и диска Detroit")
     void buyPlayStationAndGames() {
 
         // 2. в поиске найти playstation
