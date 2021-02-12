@@ -15,9 +15,12 @@ import java.util.List;
 @DisplayName("Тестируем магазин DNS")
 public class ShopDNSTest extends BaseTests {
 
-    static int priceBasket;         // сумма корзины
-    static int pricePSNotGur;       // цена PS без гарантии
-    static int pricePSWithGur;      // цена PS с гарантией
+    // НАПОМИНАЛКА: нужно будет сделать assert заголовок страниц при их открытии
+
+    static int priceBasket;             // сумма корзины
+    static int pricePSNotGur;           // цена PS без гарантии
+    static int pricePSWithGur;          // цена PS с гарантией
+    static int priceDiskDetroit;        // цена диска Детроит
 
     @Test
     @DisplayName("Тест покупки PlayStation и пары дисков с играми")
@@ -68,14 +71,47 @@ public class ShopDNSTest extends BaseTests {
         waitUtilElementToBeVisible(pricePlayStationWithGuarantee);
         pricePSWithGur = Integer.parseInt(pricePlayStationWithGuarantee.getText().replaceAll("\\W", ""));
 
+        Assertions.assertNotEquals(pricePSNotGur, pricePSWithGur,
+                "После подключения гарантии сумма не изменилась");
+
         // 7. Нажать Купить
-        String buttonBuyXPath = "//button[contains(.,'Купить')]";
-        WebElement buttonBuy = driver.findElement(By.xpath(buttonBuyXPath));
-        waitUtilElementToBeVisible(buttonBuy);
-        waitUtilElementToBeClickable(buttonBuy);
-        buttonBuy.click();
+        String buttonBuyPSXPath = "//button[contains(.,'Купить')]";
+        WebElement buttonBuyPS = driver.findElement(By.xpath(buttonBuyPSXPath));
+        waitUtilElementToBeVisible(buttonBuyPS);
+        waitUtilElementToBeClickable(buttonBuyPS);
+        buttonBuyPS.click();
 
         priceBasket += pricePSWithGur;
+
+        waitThread(500); // на всякий случай, ждем изменение корзины на экране
+
+        // 8. выполнить поиск Detroit
+        String fieldFoundDetroitXPath =
+                "//input[@class='ui-input-search__input " +
+                        "ui-input-search__input_presearch' and @placeholder='Поиск по сайту']";
+        WebElement fieldFoundDetroit = driver.findElement(By.xpath(fieldFoundDetroitXPath));
+        waitUtilElementToBeClickable(fieldFoundDetroit);
+        fieldFoundDetroit.click();
+        fieldFoundDetroit.clear();
+        fieldFoundDetroit.sendKeys("Detroit");
+        Assertions.assertEquals("Detroit", fieldFoundDetroit.getAttribute("value"),
+                "Поле было заполнено не верно");
+        fieldFoundDetroit.sendKeys(Keys.ENTER);
+
+        // 9. запомнить цену Detroit
+        String priceDetroitXPath = "//div[@class='product-card-price__current-wrap']";
+        WebElement priceDetroit = driver.findElement(By.xpath(priceDetroitXPath));
+        waitUtilElementToBeVisible(priceDetroit);
+        priceDiskDetroit = Integer.parseInt(priceDetroit.getText().replaceAll("\\W", ""));
+
+        // 10. нажать купить Detroit
+        String buttonBuyDetroitXPath = "//button[contains(.,'Купить')]";
+        WebElement buttonBuyDetroit = driver.findElement(By.xpath(buttonBuyDetroitXPath));
+        waitUtilElementToBeVisible(buttonBuyDetroit);
+        waitUtilElementToBeClickable(buttonBuyDetroit);
+        buttonBuyDetroit.click();
+
+        priceBasket += priceDiskDetroit;
 
         waitThread(500); // на всякий случай, ждем изменение корзины на экране
 
@@ -83,15 +119,11 @@ public class ShopDNSTest extends BaseTests {
         System.out.println("priceBasket = " + priceBasket);
         System.out.println("pricePSNotGur = " + pricePSNotGur);
         System.out.println("pricePSWithGur = " + pricePSWithGur);
+        System.out.println("priceDiskDetroit = " + priceDiskDetroit);
 
 
         waitThread(3000);
         /*
-
-
-        8. выполнить поиск Detroit
-        9. запомнить цену
-        10. нажать купить
         11. проверить что цена корзины стала равна сумме покупок
         12. перейри в корзину
         13. проверить, что для приставки выбрана гарантия на 2 года
