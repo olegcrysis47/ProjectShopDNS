@@ -15,6 +15,10 @@ import java.util.List;
 @DisplayName("Тестируем магазин DNS")
 public class ShopDNSTest extends BaseTests {
 
+    static int priceBasket;         // сумма корзины
+    static int pricePSNotGur;       // цена PS без гарантии
+    static int pricePSWithGur;      // цена PS с гарантией
+
     @Test
     @DisplayName("Тест покупки PlayStation и пары дисков с играми")
     void buyPlayStationAndGames() {
@@ -44,12 +48,47 @@ public class ShopDNSTest extends BaseTests {
             }
         }
 
-        waitThread(5000);
+        // 4. запомнить цену
+        String pricePlayStationNotGuaranteeXPath = "//div[@class='product-card-price__current-wrap']";
+        WebElement pricePlayStationNotGuarantee = driver.findElement(By.xpath(pricePlayStationNotGuaranteeXPath));
+        waitUtilElementToBeVisible(pricePlayStationNotGuarantee);
+        pricePSNotGur = Integer.parseInt(pricePlayStationNotGuarantee.getText().replaceAll("\\W", ""));
+
+        // 5. Доп.гарантия - выбрать 2 года
+        String selectuaranteeTwoYearXPath = "//select//option[@value='1']";
+        WebElement selectGuaranteeTwoYear = driver.findElement(By.xpath(selectuaranteeTwoYearXPath));
+        waitUtilElementToBeClickable(selectGuaranteeTwoYear);
+        selectGuaranteeTwoYear.click();
+
+        waitThread(500); // на всякий случай, ждем изменение цены
+
+        // 6. дождаться изменения цены и запомнить цену с гарантией
+        String pricePlayStationWithGuaranteeXPath = "//div[@class='product-card-price__current-wrap']";
+        WebElement pricePlayStationWithGuarantee = driver.findElement(By.xpath(pricePlayStationWithGuaranteeXPath));
+        waitUtilElementToBeVisible(pricePlayStationWithGuarantee);
+        pricePSWithGur = Integer.parseInt(pricePlayStationWithGuarantee.getText().replaceAll("\\W", ""));
+
+        // 7. Нажать Купить
+        String buttonBuyXPath = "//button[contains(.,'Купить')]";
+        WebElement buttonBuy = driver.findElement(By.xpath(buttonBuyXPath));
+        waitUtilElementToBeVisible(buttonBuy);
+        waitUtilElementToBeClickable(buttonBuy);
+        buttonBuy.click();
+
+        priceBasket += pricePSWithGur;
+
+        waitThread(500); // на всякий случай, ждем изменение корзины на экране
+
+        // временно, чтобы посмотреть запоминание переменных
+        System.out.println("priceBasket = " + priceBasket);
+        System.out.println("pricePSNotGur = " + pricePSNotGur);
+        System.out.println("pricePSWithGur = " + pricePSWithGur);
+
+
+        waitThread(3000);
         /*
-        4. запомнить цену
-        5. Доп.гарантия - выбрать 2 года
-        6. дождаться изменения цены и запомнить цену с гарантией
-        7. Нажать Купить
+
+
         8. выполнить поиск Detroit
         9. запомнить цену
         10. нажать купить
