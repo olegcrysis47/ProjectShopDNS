@@ -113,7 +113,19 @@ public class ShopDNSTest extends BaseTests {
 
         priceBasket += priceDiskDetroit;
 
-        waitThread(500); // на всякий случай, ждем изменение корзины на экране
+        waitThread(3000); // на всякий случай, ждем изменение корзины на экране
+
+        // 11. проверить что цена корзины стала равна сумме покупок
+        String sumBasketOnScreenXPath = "//a[@class='ui-link cart-link']//span[@class='cart-link__price']";
+        WebElement sumBasketOnScreen = driver.findElement(By.xpath(sumBasketOnScreenXPath));
+        //waitUtilElementToBeVisible(sumBasketOnScreen);
+
+        Assertions.assertEquals(priceBasket,
+                Integer.parseInt(sumBasketOnScreen.getText().replaceAll("\\W", "")),
+                "Сумма на экране не соответствует сумме добавленных товаров");
+
+        // 12. перейти в корзину
+        sumBasketOnScreen.click();
 
         // временно, чтобы посмотреть запоминание переменных
         System.out.println("priceBasket = " + priceBasket);
@@ -124,8 +136,6 @@ public class ShopDNSTest extends BaseTests {
 
         waitThread(3000);
         /*
-        11. проверить что цена корзины стала равна сумме покупок
-        12. перейри в корзину
         13. проверить, что для приставки выбрана гарантия на 2 года
         14. проверить цену каждого из товаров и сумму
         15. удалить из корзины Detroit
