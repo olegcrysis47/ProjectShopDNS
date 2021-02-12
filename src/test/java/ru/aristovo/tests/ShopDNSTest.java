@@ -9,6 +9,7 @@ import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import ru.aristovo.base.BaseTests;
+import ru.aristovo.framework.pages.*;
 
 import java.util.List;
 
@@ -26,30 +27,13 @@ public class ShopDNSTest extends BaseTests {
     @DisplayName("Автоматизированный тест покупки PlayStation и диска Detroit")
     void buyPlayStationAndGames() {
 
-        // 2. в поиске найти playstation
-        String fieldFoundOnSiteXPath =
-                "//input[@class='ui-input-search__input " +
-                        "ui-input-search__input_presearch' and @placeholder='Поиск по сайту']";
+        StartPage startPage = new StartPage(driver);
+        ListProductPage listProductPage = new ListProductPage(driver);
 
-        WebElement fieldFoundOnSite = driver.findElement(By.xpath(fieldFoundOnSiteXPath));
-        waitUtilElementToBeClickable(fieldFoundOnSite);
-        fieldFoundOnSite.click();
-        fieldFoundOnSite.sendKeys("playstation");
-        Assertions.assertEquals("playstation", fieldFoundOnSite.getAttribute("value"),
-                "Поле было заполнено не верно");
-        fieldFoundOnSite.sendKeys(Keys.ENTER);
+        startPage.searchProductOnSite("playstation");
+        listProductPage.selectAvailableProduct("playstation 4 slim black");
 
-        // 3. кликнуть по playstation 4 slim black
-        String selectAvailableProductXPath = "//div[@data-id='product']";
-        List<WebElement> selectAvailableProduct = driver.findElements(By.xpath(selectAvailableProductXPath));
-        for (WebElement w:selectAvailableProduct) {
-            WebElement p = w.findElement(By.xpath(".//a[@class='ui-link']"));
-            if (p.getText().toLowerCase().contains("playstation 4 slim black")) {
-                waitUtilElementToBeClickable(p);
-                p.click();
-                break;
-            }
-        }
+
 
         // 4. запомнить цену
         String pricePlayStationNotGuaranteeXPath = "//div[@class='product-card-price__current-wrap']";
