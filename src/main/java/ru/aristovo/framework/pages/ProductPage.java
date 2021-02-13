@@ -1,6 +1,7 @@
 package ru.aristovo.framework.pages;
 
 import org.junit.jupiter.api.Assertions;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -28,6 +29,18 @@ public class ProductPage {
      */
     @FindBy(xpath = "//select//option[@value='1']")
     WebElement guaranteeTwoYear;
+
+    /**
+     * Переменная для кнопки "Купить".
+     */
+    @FindBy(xpath = "//button[contains(.,'Купить')]")
+    WebElement buttonBuy;
+
+    /**
+     * Поле на сайте "Поиск по сайту"
+     */
+    @FindBy(xpath = "//input[@class='ui-input-search__input ui-input-search__input_presearch' and @placeholder='Поиск по сайту']")
+    WebElement searchField;
 
     /**
      * Конструктор.
@@ -88,29 +101,21 @@ public class ProductPage {
         }
     }
 
-/*
-    // 7. Нажать Купить
-    String buttonBuyPSXPath = "//button[contains(.,'Купить')]";
-    WebElement buttonBuyPS = driver.findElement(By.xpath(buttonBuyPSXPath));
-    waitUtilElementToBeVisible(buttonBuyPS);
-    waitUtilElementToBeClickable(buttonBuyPS);
-        buttonBuyPS.click();
+    public void clickButtonBuy() {
+        buttonBuy.click();
+        waitThread(500);
+    }
 
-    priceBasket += pricePSWithGur;
-
-    waitThread(500); // на всякий случай, ждем изменение корзины на экране
-
-    // 8. выполнить поиск Detroit
-    String fieldFoundDetroitXPath =
-            "//input[@class='ui-input-search__input " +
-                    "ui-input-search__input_presearch' and @placeholder='Поиск по сайту']";
-    WebElement fieldFoundDetroit = driver.findElement(By.xpath(fieldFoundDetroitXPath));
-    waitUtilElementToBeClickable(fieldFoundDetroit);
-        fieldFoundDetroit.click();
-        fieldFoundDetroit.clear();
-        fieldFoundDetroit.sendKeys("Detroit");
-        Assertions.assertEquals("Detroit", fieldFoundDetroit.getAttribute("value"),
+    /**
+     * Метод обращается к полю "Поиск по сайту" и вводит в него наименование искомого товара.
+     * @param productName - пользователь вводит полное или частичное наименование товара, который его интересует.
+     */
+    public void searchProductOnSite(String productName) {
+        searchField.click();
+        searchField.clear();
+        searchField.sendKeys(productName);
+        Assertions.assertEquals(productName, searchField.getAttribute("value"),
                 "Поле было заполнено не верно");
-        fieldFoundDetroit.sendKeys(Keys.ENTER);
-        */
+        searchField.sendKeys(Keys.ENTER);
+    }
 }
