@@ -29,34 +29,12 @@ public class ShopDNSTest extends BaseTests {
 
         StartPage startPage = new StartPage(driver);
         ListProductPage listProductPage = new ListProductPage(driver);
+        ProductPage productPage = new ProductPage(driver);
 
         startPage.searchProductOnSite("playstation");
         listProductPage.selectAvailableProduct("playstation 4 slim black");
+        productPage.setupGuaranteeOnProduct(2);
 
-
-
-        // 4. запомнить цену
-        String pricePlayStationNotGuaranteeXPath = "//div[@class='product-card-price__current-wrap']";
-        WebElement pricePlayStationNotGuarantee = driver.findElement(By.xpath(pricePlayStationNotGuaranteeXPath));
-        waitUtilElementToBeVisible(pricePlayStationNotGuarantee);
-        pricePSNotGur = Integer.parseInt(pricePlayStationNotGuarantee.getText().replaceAll("\\W", ""));
-
-        // 5. Доп.гарантия - выбрать 2 года
-        String selectuaranteeTwoYearXPath = "//select//option[@value='1']";
-        WebElement selectGuaranteeTwoYear = driver.findElement(By.xpath(selectuaranteeTwoYearXPath));
-        waitUtilElementToBeClickable(selectGuaranteeTwoYear);
-        selectGuaranteeTwoYear.click();
-
-        waitThread(500); // на всякий случай, ждем изменение цены
-
-        // 6. дождаться изменения цены и запомнить цену с гарантией
-        String pricePlayStationWithGuaranteeXPath = "//div[@class='product-card-price__current-wrap']";
-        WebElement pricePlayStationWithGuarantee = driver.findElement(By.xpath(pricePlayStationWithGuaranteeXPath));
-        waitUtilElementToBeVisible(pricePlayStationWithGuarantee);
-        pricePSWithGur = Integer.parseInt(pricePlayStationWithGuarantee.getText().replaceAll("\\W", ""));
-
-        Assertions.assertNotEquals(pricePSNotGur, pricePSWithGur,
-                "После подключения гарантии сумма не изменилась");
 
         // 7. Нажать Купить
         String buttonBuyPSXPath = "//button[contains(.,'Купить')]";
